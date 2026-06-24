@@ -1,17 +1,15 @@
-import { Trash2Icon, PenSquare } from "lucide-react";
-import DeleteModal from "./DeleteModal";
 import { useState } from "react";
 import TaskModal from "./TaskModal";
+import DeleteModal from "./DeleteModal";
 import { properCase } from "../utils/text";
+import { Trash2Icon, PenSquare } from "lucide-react";
 
-const Task = ({ id, title, description, status, priority, dueDate, deleteTask, setTasks }) => {
+const Task = ({ id, title, description, status, priority, dueDate, refreshList }) => {
     const [isDelModalOpen, setDelModalOpen] = useState(false)
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     
     return (
-        <div
-            className="flex justify-between"
-        >
+        <div className="flex justify-between">
             <div>
                 <div className="flex flex-col gap-2">
                     <div className="flex gap-3 items-center">
@@ -30,12 +28,8 @@ const Task = ({ id, title, description, status, priority, dueDate, deleteTask, s
                             })
                         }
                         </span>
-                        <span className="font-bold">
-                            &middot;
-                        </span>
-                        <span>
-                            {properCase(priority)}
-                        </span>
+                        <span className="font-bold">&middot;</span>
+                        <span>{properCase(priority)}</span>
                     </div>
 
                 </div>
@@ -51,7 +45,8 @@ const Task = ({ id, title, description, status, priority, dueDate, deleteTask, s
             <DeleteModal 
                 isOpen={isDelModalOpen}
                 onClose={() => { setDelModalOpen(false) }}
-                onDelete={deleteTask}
+                id={id}
+                refreshList={refreshList}
             />
             <TaskModal
                 isOpen={isUpdateModalOpen}
@@ -62,8 +57,8 @@ const Task = ({ id, title, description, status, priority, dueDate, deleteTask, s
                 oldPriority={priority}
                 oldDueDate={dueDate}
                 isUpdate={true}
-                setTasks={setTasks}
                 id={id}
+                refreshList={refreshList}
             />
         </div>
     )

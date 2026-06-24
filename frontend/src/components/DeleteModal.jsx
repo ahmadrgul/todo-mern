@@ -1,11 +1,11 @@
 import Modal from "./Modal";
+import useDeleteTask from "../hooks/useDeleteTask";
 
-const DeleteModal = ({isOpen, onClose, onDelete}) => {
+const DeleteModal = ({id, isOpen, onClose, onDelete, refreshList}) => {
+    const { loading, deleteTask } = useDeleteTask();
+
     return (
-        <Modal
-            isOpen={isOpen}
-            onClose={onClose}
-        >
+        <Modal isOpen={isOpen} onClose={onClose}>
             <div>
                 <h2 className="font-medium text-lg">Are you sure, you want to delete this task?</h2>
                 <p className="text-gray-700">This cannot be undone.</p>
@@ -14,7 +14,8 @@ const DeleteModal = ({isOpen, onClose, onDelete}) => {
                 <button
                     className="bg-red-500 text-white font-medium px-4 py-2 rounded-md hover:cursor-pointer hover:opacity-90"
                     onClick={() => {
-                        onDelete();
+                        deleteTask(id);
+                        refreshList(prev => prev + 1)
                         onClose();
                     }}
                 >

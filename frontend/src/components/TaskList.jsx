@@ -1,31 +1,27 @@
 import { useState, useEffect } from "react";
-import { deleteTask, getTasks } from "../api/tasks";
+import { getTasks } from "../api/tasks";
 import Task from "./Task";
 import { CirclePlusIcon } from "lucide-react";
 import TaskModal from "./TaskModal";
+import useFetchTasks from "../hooks/useFetchTasks";
 
 
 const TaskList = () => {
-    const [tasks, setTasks] = useState([])
-    const [isModalOpen, setIsModelOpen] = useState(false)
+    const [ isModalOpen, setIsModelOpen ] = useState(false)
+    const { data, loading, fetchTasks } = useFetchTasks();
+    const [ refreshTrigger, setRefreshTrigger ] = useState(0);
 
     useEffect(() => {
-        const fetchTasks = async () => {
-            const tasklist = await getTasks();
-            setTasks(tasklist);
-        }
         fetchTasks();
-    }, [])
+    }, [refreshTrigger])
+
+    if (loading) return <div>Loading...</div>
 
     return (
-        <div
-            className="flex justify-center mt-24"
-        >
-            <ul
-                className="w-2/3"
-            >
+        <div className="flex justify-center mt-24">
+            <ul className="w-2/3">
             {
-                tasks.map((task, i) => (
+                data?.map((task, i) => (
                     <li 
                         key={task._id}
                         className="border-b border-gray-200 py-8"
@@ -37,11 +33,7 @@ const TaskList = () => {
                         status={task.status} 
                         priority={task.priority} 
                         dueDate={task.dueDate}
-                        deleteTask={() => { 
-                            deleteTask(task._id)
-                            setTasks(tasks.filter((t) => t._id != task._id))
-                        }}
-                        setTasks={setTasks}
+                        refreshList={setRefreshTrigger}
                     /> 
                     </li>
                 ))
@@ -63,7 +55,7 @@ const TaskList = () => {
                 isOpen={isModalOpen} 
                 onClose={() => setIsModelOpen(false)}
                 isUpdate={false}
-                setTasks={setTasks}
+                refreshList={setRefreshTrigger}
             />
         </div>
     )

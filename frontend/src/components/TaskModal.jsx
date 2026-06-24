@@ -1,8 +1,14 @@
 import { useState } from "react";
 import Modal from "./Modal";
-import { createTask, getTasks, updateTask } from "../api/tasks";
+import useCreateTask from "../hooks/useCreateTask";
+import useFetchTasks from "../hooks/useFetchTasks";
+import useUpdateTask from "../hooks/useUpdateTask";
 
-const TaskModal = ({isOpen, onClose, id, oldTitle, oldDesc, oldPriority, oldStatus, oldDueDate, isUpdate, setTasks}) => {
+const TaskModal = ({isOpen, onClose, id, oldTitle, oldDesc, oldPriority, oldStatus, oldDueDate, isUpdate, refreshList }) => {
+    const { createTask } = useCreateTask();
+    const { updateTask } = useUpdateTask();
+    const { fetchTasks } = useFetchTasks();
+
     const [title, setTitle] = useState(oldTitle);
     const [desc, setDesc] = useState(oldDesc);
     const [priority, setPriority] = useState(oldPriority || "low");
@@ -11,8 +17,9 @@ const TaskModal = ({isOpen, onClose, id, oldTitle, oldDesc, oldPriority, oldStat
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (isUpdate) {
-            const res = await updateTask(
+            updateTask(
                 id,
                 title,
                 desc,
@@ -20,19 +27,17 @@ const TaskModal = ({isOpen, onClose, id, oldTitle, oldDesc, oldPriority, oldStat
                 priority,
                 dueDate
             )
-            console.log("Task updated", res)
         } else {
-            const res = await createTask(
+            createTask(
                 title,
                 desc,
                 status,
                 priority,
                 dueDate
             );
-            console.log("Task created", res)
         }
-        let newTaskList = await getTasks();
-        setTasks(newTaskList)
+
+        refreshList(prev => prev + 1)
         onClose();
     }
 
