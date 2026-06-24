@@ -7,10 +7,10 @@ const useUpdateTask = () => {
     const [ loading, setLoading ] = useState(false);
     const { showToast } = useToast();
 
-    const updateTask = (title, description, status, priority, dueDate) => {
+    const updateTask = (id, title, description, status, priority, dueDate) => {
         setLoading(true);
 
-        patchTask(title, description, status, priority, dueDate)
+        patchTask(id, title, description, status, priority, dueDate)
             .then((response) => {
                 if (response.status == 200) {
                     setData(response.data)
